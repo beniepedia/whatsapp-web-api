@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>whats api</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" type="text/css">
+    <link rel="stylesheet" href="/assets/css/Navigation-Clean.css" type="text/css">
+    <link rel="stylesheet" href="/assets/css/styles.css" type="text/css">
+</head>
+
+<body>
+    <nav class="navbar navbar-dark navbar-expand-md bg-dark navigation-clean">
+        <div class="container"><a class="navbar-brand text-left text-light" href="#">WhatsApp API Personal</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="navbar-nav ml-auto"></ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <div class="row bounce animated">
+            <div class="col-md-5 mb-4">
+                <div class="card border rounded">
+                    <div class="card-body">
+                        <div class="card-qrcode">
+                            <h4 class="text-center card-title">SCAN QR-CODE</h4>
+                            <h6 class="text-muted card-subtitle mb-2"><br>please connect your whatsapp by scanning the qrcode below.<br><br></h6>
+                            <img width="100%" src="/assets/img/ajax-loader.gif" loading="auto" class="img-thumbnail" id="qr-code">
+                        </div>
+                        <div class="status mt-4">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5 offset-md-2">
+                <h5>Logs -</h5>
+                <ul class="list-group" style="overflow: scroll; height: 340px;">
+                  
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.min.js" integrity="sha512-N5JbZMETkl+0SZh5l8OA2VxSfF120owfQyy54iAXTJIKuqAn3A9TrNz1ypB55o8aSU5MxaodEgv74wGUvgUynQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+    <script>
+        $(document).ready(function(){
+            var socket = io.connect('http://localhost:3000', {path: '/socket.io'});
+
+            socket.on('message', function(msg){
+                $(".list-group").append('<a href="#" class="list-group-item list-group-item-action">' +
+                        '<div class="d-flex w-100 justify-content-between">'+
+                          '<h6 class="mb-1">'+ msg +'</h6>'+
+                          '<small>3 days ago</small>'+
+                        '</div></a>');
+            });
+
+            socket.on('status', function(status, type){
+                $('.status').html('<div class="alert alert-'+ type +' text-center" role="alert">'+ status +'</div>');
+            });
+
+            socket.on('qr', function(src){
+                $("#qr-code").attr('src', src);
+            });
+
+            socket.on('ready', function(){
+                $(".card-qrcode").hide();
+            });
+
+            socket.on('authenticated', function(){
+                $(".card-qrcode").hide();
+            });
+        });
+    </script>
+
+</body>
+</html>
