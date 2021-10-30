@@ -1,24 +1,24 @@
-
-
 const { body, validationResult } = require('express-validator');
 const { phoneNumberFormat } = require('../helpers/formatter.js');
 
+const client = require('../library/whatsapp-api');
+
 module.exports = {
-    index: function(req, res) {
-        // const errors = validationResult(req).formatWith(({ msg }) => {
-        //     return msg;
-        // });
+    index: function (req, res) {
+        const errors = validationResult(req).formatWith(({ msg }) => {
+            return msg;
+        });
     
-        // if (!errors.isEmpty()) {
-        //     return res.status(422).json({
-        //         status: false,
-        //         message: errors.mapped()
-        //     });
-        // }
+        if (!errors.isEmpty()) {
+            return res.status(422).json({
+                status: false,
+                message: errors.mapped()
+            });
+        }
     
         const number = phoneNumberFormat(req.body.number);
         const message = req.body.message;
-    
+
         client.sendMessage(number, message).then(response => {
             res.status(200).json({
                 status: true,

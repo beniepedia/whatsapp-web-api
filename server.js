@@ -1,19 +1,21 @@
 const express = require('express');
+const fs = require('fs');
 const socketIO = require("socket.io");
 var methodOverride = require("method-override")
 const http = require('http');
-const ejs = require('ejs');
 const path = require('path');
 const qrcode = require('qrcode');
-const fs = require('fs');
+const { Client } = require('whatsapp-web.js');
+
+// whatsapp library
 
 // WhatsApp Library
-const {client, sessionData} = require('./app/library/whatsapp-api');
+const client = require('./app/library/whatsapp-api');
+
 
 // DB Conecttion
 // require('./app/config/db');
 // const deviceModel = require('./app/models/deviceModel');
-const SESSION_FILE_PATH = process.env.SESSION_FILE_PATH;
 
 // Create Server
 const app = express();
@@ -38,7 +40,10 @@ const homeRouter = require("./app/routes/homeRouter");
 const apiRouter = require("./app/routes/apiRouter");
 
 app.use('/', homeRouter);
-app.use('/', apiRouter);
+app.use('/api/send-message', apiRouter);
+
+const SESSION_FILE_PATH = './app/library/session-whatsapp.json';
+
 
 // Connection Socket
 
@@ -63,9 +68,10 @@ io.on('connection', async function(socket) {
 
     client.on('authenticated', (session) => {
         sessionData = session;
-        socket.emit('authenticated', 'Whatsapp is authenticated!');
+        socket.emit('authenticated');
         socket.emit('status', 'Connected!', 'success');
         socket.emit('message', 'Authenticated!');
+        socket.emit('message', 'Whatsapp is authenticated!');
     
         fs.writeFile(SESSION_FILE_PATH, JSON.stringify(session), (err) => {
             if (err) {

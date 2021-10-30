@@ -6,9 +6,9 @@ const phoneNumberFormat = function(number)  {
         formatted = '62' + formatted.substr(1);
     }
 
-    if(!formatted.startsWith('0')){
-        formatted = '62' + formatted;
-    }
+    // if(!formatted.startsWith('0')){
+    //     formatted = '62' + formatted;
+    // }
 
     if(!formatted.endsWith('@c.us')){
         formatted += '@c.us';
