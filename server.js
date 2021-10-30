@@ -43,38 +43,38 @@ app.use('/', homeRouter);
 //     // })
 //     console.log(qr);
 // });
-client
+
 // Connection Socket
-// io.on('connection', function(socket) {
-//     socket.emit('message', 'Conecting to server. Please wait ...');
-//     socket.emit('status', 'Not Connected', 'warning');
+io.on('connection', function(socket) {
+    socket.emit('message', 'Conecting to server. Please wait ...');
+    socket.emit('status', 'Not Connected', 'warning');
 
-//     client.on('qr', (qr) => {
-//         qrcode.toDataURL(qr, (err, url) => {
-//             io.emit('qr', url);
-//             socket.emit('message', 'QR-Code Received, please scan ...');
-//             console.log('QR-Code Received...');
-//         })
-//     });
+    client.on('qr', (qr) => {
+        qrcode.toDataURL(qr, (err, url) => {
+            io.emit('qr', url);
+            socket.emit('message', 'QR-Code Received, please scan ...');
+            console.log('QR-Code Received...');
+        })
+    });
 
-//     client.on('ready', () => {
-//         console.log('Client is ready!');
-//         socket.emit('message', 'Whatsapp is ready!');
-//         socket.emit('ready');
-//         socket.emit('status', 'Connected!', 'success');
-//     });
+    client.on('ready', () => {
+        console.log('Client is ready!');
+        socket.emit('message', 'Whatsapp is ready!');
+        socket.emit('ready');
+        socket.emit('status', 'Connected!', 'success');
+    });
 
-//     client.on('authenticated', async (session) => {
-//         socket.emit('authenticated', 'Whatsapp is authenticated!');
-//         socket.emit('status', 'Connected!', 'success');
-//         socket.emit('message', 'Authenticated!');
+    client.on('authenticated', async (session) => {
+        socket.emit('authenticated', 'Whatsapp is authenticated!');
+        socket.emit('status', 'Connected!', 'success');
+        socket.emit('message', 'Authenticated!');
     
-//         await deviceModel.insert({
-//             session: session,
-//             insertAt: new Date()
-//         })
-//     });
-// });
+        await deviceModel.insertMany({
+            session: JSON.stringify(session),
+            insertAt: new Date()
+        })
+    });
+});
 
 
 server.listen(port, function () {

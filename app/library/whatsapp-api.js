@@ -14,7 +14,20 @@ if (fs.existsSync(SESSION_FILE_PATH)) {
 };
 
 // Use the saved values
-const client = new Client({ 
+const client = new Client({
+    restartOnAuthFail: true,
+    puppeteer: {
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-accelerated-2d-canvas',
+      '--no-first-run',
+      '--no-zygote',
+      '--single-process', // <- this one doesn't works in Windows
+      '--disable-gpu'
+    ]}, 
     session: sessionData
 });
 
@@ -28,19 +41,7 @@ client.on('qr', (qr) => {
     // });
 });
 
-// restartOnAuthFail: true,
-//     puppeteer: {
-//     headless: true,
-//     args: [
-//       '--no-sandbox',
-//       '--disable-setuid-sandbox',
-//       '--disable-dev-shm-usage',
-//       '--disable-accelerated-2d-canvas',
-//       '--no-first-run',
-//       '--no-zygote',
-//       '--single-process', // <- this one doesn't works in Windows
-//       '--disable-gpu'
-//     ]},
+
 
 // client.on('message', message => {
 //     if (message.body === '!ping') {
