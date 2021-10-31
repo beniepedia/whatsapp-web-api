@@ -1,17 +1,16 @@
 const { Client } = require('whatsapp-web.js');
 const fs = require('fs');
 
-
-
-
 // // Path where the session data will be stored
-const SESSION_FILE_PATH = './session.json';
+const SESSION_FILE_PATH = '../../session.json';
 
 let sessionData;
 
 if (fs.existsSync(SESSION_FILE_PATH)) {
     sessionData = require(SESSION_FILE_PATH);
 };
+
+console.log(sessionData);
 
 // Use the saved values
 const client = new Client({
@@ -33,13 +32,13 @@ const client = new Client({
 
 client.initialize();
 
-client.on('qr', (qr) => {
-    console.log('QR RECEIVED', qr);
-    // qrcode.toDataURL(qr, (err, url) => {
-    //     socket.emit('qr', url);
-    //     socket.emit('message', 'QR-Code Received, please scan ...');
-    // });
-});
+// client.on('qr', (qr) => {
+//     console.log('QR RECEIVED', qr);
+//     // qrcode.toDataURL(qr, (err, url) => {
+//     //     socket.emit('qr', url);
+//     //     socket.emit('message', 'QR-Code Received, please scan ...');
+//     // });
+// });
 
 
 
@@ -53,4 +52,4 @@ client.on('qr', (qr) => {
 
 
 
-module.exports = client;
+module.exports = {client, sessionData};

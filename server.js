@@ -5,13 +5,15 @@ const http = require('http');
 const ejs = require('ejs');
 const path = require('path');
 const qrcode = require('qrcode');
+const fs = require('fs');
 
 // WhatsApp Library
-const client = require('./app/library/whatsapp-api');
+const {client, sessionData} = require('./app/library/whatsapp-api');
 
 // DB Conecttion
-require('./app/config/db');
-const deviceModel = require('./app/models/deviceModel');
+// require('./app/config/db');
+// const deviceModel = require('./app/models/deviceModel');
+const SESSION_FILE_PATH = process.env.SESSION_FILE_PATH;
 
 // Create Server
 const app = express();
@@ -32,20 +34,15 @@ app.use(express.static(__dirname + '/public'));
 
 // Route to home
 const homeRouter = require("./app/routes/homeRouter");
+// Route to API
+const apiRouter = require("./app/routes/apiRouter");
 
 app.use('/', homeRouter);
-
-// client.on('qr', (qr) => {
-//     // qrcode.toDataURL(qr, (err, url) => {
-//     //     io.emit('qr', url);
-//     //     socket.emit('message', 'QR-Code Received, please scan ...');
-//     //     console.log('QR-Code Received...');
-//     // })
-//     console.log(qr);
-// });
+app.use('/', apiRouter);
 
 // Connection Socket
-io.on('connection', function(socket) {
+
+io.on('connection', async function(socket) {
     socket.emit('message', 'Conecting to server. Please wait ...');
     socket.emit('status', 'Not Connected', 'warning');
 
@@ -64,15 +61,17 @@ io.on('connection', function(socket) {
         socket.emit('status', 'Connected!', 'success');
     });
 
-    client.on('authenticated', async (session) => {
+    client.on('authenticated', (session) => {
+        sessionData = session;
         socket.emit('authenticated', 'Whatsapp is authenticated!');
         socket.emit('status', 'Connected!', 'success');
         socket.emit('message', 'Authenticated!');
     
-        await deviceModel.insertMany({
-            session: JSON.stringify(session),
-            insertAt: new Date()
-        })
+        fs.writeFile(SESSION_FILE_PATH, JSON.stringify(session), (err) => {
+            if (err) {
+                console.error(err);
+            }
+        });
     });
 });
 

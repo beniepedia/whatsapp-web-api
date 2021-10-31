@@ -4,7 +4,7 @@ const router = express.Router();
 
 const apiController = require('../controller/apiController');
 
-router.post("/send-message", apiController.index);
+router.post("/api/send-message", apiController.index);
 
-module.export = router
+module.exports = router
 

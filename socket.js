@@ -29,11 +29,12 @@ client.on('authenticated', (session) => {
     socket.emit('authenticated', 'Whatsapp is authenticated!');
     socket.emit('status', 'Connected!', 'success');
     socket.emit('message', 'Authenticated!');
-
-    device.insert({
-        session: session,
-        insertAt: new Date()
-    })
+    
+    fs.writeFile(SESSION_FILE_PATH, JSON.stringify(session), (err) => {
+        if (err) {
+            console.error(err);
+        }
+    });
 });
 
 
