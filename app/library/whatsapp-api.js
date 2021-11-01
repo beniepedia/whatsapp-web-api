@@ -1,19 +1,20 @@
 // const fs = require('fs');
-const { Client } = require('whatsapp-web.js');
+const { Client } = require("whatsapp-web.js");
 
-require('../config/db');
-const deviceModel = require('../models/deviceModel');
-
+require("../config/db");
+const deviceModel = require("../models/deviceModel");
 
 const getSession = async () => {
   try {
     const session = await deviceModel.findOne();
-    return session;
+    if (!session) {
+      return "";
+    }
+    return JSON.parse(session.session);
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
-
+};
 
 module.exports = {
   client: async () => {
@@ -23,16 +24,17 @@ module.exports = {
       puppeteer: {
         headless: true,
         args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-accelerated-2d-canvas',
-          '--no-first-run',
-          '--no-zygote',
-          '--single-process', // <- this one doesn't works in Windows
-          '--disable-gpu'
-        ]}, 
-      // session: dataSession.session 
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage",
+          "--disable-accelerated-2d-canvas",
+          "--no-first-run",
+          "--no-zygote",
+          "--single-process", // <- this one doesn't works in Windows
+          "--disable-gpu",
+        ],
+      },
+      session: dataSession,
     });
-  }
-}
+  },
+};
