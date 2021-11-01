@@ -6,16 +6,11 @@ const http = require('http');
 const path = require('path');
 const qrcode = require('qrcode');
 const { Client } = require('whatsapp-web.js');
+const dev = require('./app/library/whatsapp-api.js');
 
-// whatsapp library
-
-// WhatsApp Library
-const client = require('./app/library/whatsapp-api');
-
-
-// DB Conecttion
-// require('./app/config/db');
-// const deviceModel = require('./app/models/deviceModel');
+// MongoDB
+require('./app/config/db');
+const deviceModel = require('./app/models/deviceModel');
 
 // Create Server
 const app = express();
@@ -42,46 +37,46 @@ const apiRouter = require("./app/routes/apiRouter");
 app.use('/', homeRouter);
 app.use('/api/send-message', apiRouter);
 
-const SESSION_FILE_PATH = './app/library/session-whatsapp.json';
+// Server
+(async() => {
+    const client = await dev.client();
+    client.initialize();
 
-
-// Connection Socket
-
-io.on('connection', async function(socket) {
-    socket.emit('message', 'Conecting to server. Please wait ...');
-    socket.emit('status', 'Not Connected', 'warning');
-
-    client.on('qr', (qr) => {
-        qrcode.toDataURL(qr, (err, url) => {
-            io.emit('qr', url);
-            socket.emit('message', 'QR-Code Received, please scan ...');
-            console.log('QR-Code Received...');
-        })
+    server.listen(port, function () {
+        console.log(`Server is ready http://localhost:${port}`);
     });
 
-    client.on('ready', () => {
-        console.log('Client is ready!');
-        socket.emit('message', 'Whatsapp is ready!');
-        socket.emit('ready');
-        socket.emit('status', 'Connected!', 'success');
-    });
+       // Connection Socket
+    io.on('connection', async function(socket) {
+        socket.emit('message', 'Conecting to server. Please wait ...');
+        socket.emit('status', 'Not Connected', 'warning');
 
-    client.on('authenticated', (session) => {
-        sessionData = session;
-        socket.emit('authenticated');
-        socket.emit('status', 'Connected!', 'success');
-        socket.emit('message', 'Authenticated!');
-        socket.emit('message', 'Whatsapp is authenticated!');
-    
-        fs.writeFile(SESSION_FILE_PATH, JSON.stringify(session), (err) => {
-            if (err) {
-                console.error(err);
-            }
+        client.on('qr', (qr) => {
+            qrcode.toDataURL(qr, (err, url) => {
+                io.emit('qr', url);
+                socket.emit('message', 'QR-Code Received, please scan ...');
+                console.log('QR-Code Received...');
+            })
+        });
+
+        client.on('ready', () => {
+            console.log('Client is ready!');
+            socket.emit('message', 'Whatsapp is ready!');
+            socket.emit('ready');
+            socket.emit('status', 'Connected!', 'success');
+        });
+
+        client.on('authenticated', (session) => {
+            socket.emit('authenticated');
+            socket.emit('status', 'Connected!', 'success');
+            socket.emit('message', 'Authenticated!');
+            socket.emit('message', 'Whatsapp is authenticated!');
+        
+            deviceModel.save(function(err, success){
+                if(err) return console.log(err);
+
+                console.log("Session inserted to database");
+            });
         });
     });
-});
-
-
-server.listen(port, function () {
-    console.log(`Server is ready http://localhost:${port}`);
-});
+})();

@@ -1,3 +1,3 @@
 {
-    "ignore":["./app/library/session-whatsapp.json"]
+    "ignore":["./app/library/session.json"]
 }
