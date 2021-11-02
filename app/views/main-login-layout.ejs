@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta
+      name="author"
+      content="Mark Otto, Jacob Thornton, and Bootstrap contributors"
+    />
+    <meta name="generator" content="Hugo 0.88.1" />
+    <title><%= title %></title>
+
+    <!-- <link
+      rel="canonical"
+      href="https://getbootstrap.com/docs/5.1/examples/sign-in/"
+    /> -->
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/css/signin.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  </head>
+  <body class="text-center">
+    <%- body %>
+
+    <script
+      type="text/javascript"
+      src="/assets/dist/js/bootstrap.bundle.min.js"
+    ></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $("button[type=submit]").click(function (e) {
+          e.preventDefault();
+          $.ajax({
+            url: $("#form-login").attr("action"),
+            type: "post",
+            datType: "json",
+            data: $("#form-login").serialize(),
+            success: function (res) {
+              if (!res.status) {
+                // $.each(res.message, function (i, value) {
+                //   $(".status").html("<ul><li>" + i.value + "</li></ul>");
+                // });
+                let err = [];
+                $.each(res.message, function (i, val) {
+                  err += val + "\n";
+                });
+
+                $(".status").html(
+                  `<div
+                    class="alert alert-danger alert-dismissible fade show"
+                    role="alert"
+                  >
+                    ` +
+                    err +
+                    `
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="alert"
+                      aria-label="Close"
+                    ></button>
+                  </div>`
+                );
+
+                // $(".status").html(
+              }
+            },
+          });
+        });
+      });
+    </script>
+    <script>
+      var alertList = document.querySelectorAll(".alert");
+      alertList.forEach(function (alert) {
+        new bootstrap.Alert(alert);
+      });
+    </script>
+  </body>
+</html>

@@ -10,9 +10,9 @@ const axios = require("axios");
 const { body, validationResult } = require("express-validator");
 const { phoneNumberFormat } = require("./app/helpers/formatter.js");
 const { MessageMedia } = require("whatsapp-web.js");
+const layouts = require("express-ejs-layouts");
 
 // MongoDB
-
 const deviceModel = require("./app/models/deviceModel");
 
 // Create Server
@@ -28,6 +28,7 @@ app.use(methodOverride("_method"));
 // use ejs engine
 app.set("views", path.join(__dirname, "app/views"));
 app.set("view engine", "ejs");
+app.use(layouts);
 
 app.use(express.static(__dirname + "/public"));
 
@@ -38,7 +39,7 @@ const apiRouter = require("./app/routes/apiRouter");
 const authRouter = require("./app/routes/authRouter");
 
 app.use("/", homeRouter);
-app.use('/auth', authRouter);
+app.use("/auth", authRouter);
 
 // Server
 (async () => {

@@ -1,9 +1,22 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const authController = require('../controllers/authController');
+const { body } = require("express-validator");
 
-router.get('/login', authController.index);
-router.post('/login', authController.login);
+const authController = require("../controllers/authController");
+
+router.get("/login", authController.index);
+router.post(
+  "/login",
+  [
+    body("email")
+      .notEmpty()
+      .withMessage("Email tidak boleh kosong!")
+      .isEmail()
+      .withMessage("Format email tidak sesuai"),
+    body("password").notEmpty().withMessage("Password tidak boleh kosong!"),
+  ],
+  authController.login
+);
 
 module.exports = router;
