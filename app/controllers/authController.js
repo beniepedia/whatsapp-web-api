@@ -1,12 +1,6 @@
 const userModel = require("../models/userModel");
 const { validationResult } = require("express-validator");
-const bcrypt = require("bcrypt");
-
-const hashPassword = async (password) => {
-  const salt = 10;
-  const hash = await bcrypt.hash(password, salt);
-  return hash;
-};
+const { hash } = require('../helpers/password');
 
 module.exports = {
   index: function (req, res) {
@@ -29,24 +23,36 @@ module.exports = {
       });
     }
 
-    const passwordHash = await hashPassword(req.body.password);
+    // const compare = await match(req.body.password, '$2b$10$lTtCqmYtg.I64oyY32dRj.H/wkM1LeZKsRfZBLT/ydJo6pT3alfyC');
 
-    const data = await new userModel({
-      name: "Ahmad Qomaini",
-      email: req.body.email,
-      password: passwordHash,
-    });
+    // console.log(compare)
 
-    data
-      .save()
-      .then(() => {
-        res.status(200).json({
-          status: true,
-          message: "Data berhasil disimpan",
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    try {
+      req.body.password = await hash(req.body.password);
+
+      const user = new userModel(req.body);
+
+      await user.save();
+    } catch(err) {
+      console.log(err);
+    }
+
+    // const data = await new userModel({
+    //   name: "Ahmad Qomaini",
+    //   email: req.body.email,
+    //   password: passwordHash,
+    // });
+
+    // data
+    //   .save()
+    //   .then(() => {
+    //     res.status(200).json({
+    //       status: true,
+    //       message: "Data berhasil disimpan",
+    //     });
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
   },
 };

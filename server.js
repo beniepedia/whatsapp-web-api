@@ -43,13 +43,14 @@ app.use("/auth", authRouter);
 
 // Server
 (async () => {
-  // const client = await dev.client();
-  // client.initialize();
-
+  
   server.listen(port, function () {
     console.log(`Server is ready http://localhost:${port}`);
   });
-
+  
+  // const client = await dev.client();
+  // client.initialize();
+  
   // Connection Socket
   // io.on("connection", function (socket) {
   //   socket.emit("message", "Conecting to server. Please wait ...");

@@ -35,7 +35,56 @@
               <input type="checkbox" value="remember-me" /> Remember me
             </label>
           </div> -->
-    <button class="w-100 btn btn-lg btn-primary" type="submit">Masuk</button>
+    <button class="w-100 btn btn-lg btn-primary loading" type="submit">
+      Masuk
+    </button>
   </form>
   <p class="mt-5 mb-3 text-muted">&copy; 2017–2021</p>
 </main>
+
+<script type="text/javascript">
+  $(document).ready(function () {
+    $("button[type=submit]").click(function (e) {
+      e.preventDefault();
+      $.ajax({
+        url: $("#form-login").attr("action"),
+        type: "post",
+        datType: "json",
+        data: $("#form-login").serialize(),
+        beforeSend: function () {
+          $(this).html(`<span
+                          class="spinner-border spinner-border-sm"
+                          role="status"
+                          aria-hidden="true"></span>`);
+        },
+        success: function (res) {
+          if (!res.status) {
+            let err = [];
+            $.each(res.message, function (i, val) {
+              err += val + "\n";
+            });
+
+            $(".status").html(
+              `<div
+                class="alert alert-danger alert-dismissible fade show"
+                role="alert"
+              >
+                ` +
+                err +
+                `
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="alert"
+                  aria-label="Close"
+                ></button>
+              </div>`
+            );
+
+            // $(".status").html(
+          }
+        },
+      });
+    });
+  });
+</script>
