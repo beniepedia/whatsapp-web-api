@@ -1,7 +1,7 @@
 module.exports = {
-    index: function(req, res){
-        res.render('home/index');
-       
-    }
-
-}
+  index: function (req, res) {
+    res.render("home/index", {
+      layout: "home/index",
+    });
+  },
+};

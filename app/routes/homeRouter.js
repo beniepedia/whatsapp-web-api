@@ -1,9 +1,11 @@
-const express = require('express');
+const express = require("express");
 
 const router = express.Router();
 
-const homeController = require('../controllers/homeController');
+const { ensureAuthenticated } = require("../config/auth");
 
-router.get("/", homeController.index);
+const homeController = require("../controllers/homeController");
 
-module.exports = router
+router.get("/", ensureAuthenticated, homeController.index);
+
+module.exports = router;

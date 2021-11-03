@@ -7,6 +7,17 @@
     height="57"
   />
   <h1 class="h3 mb-3 fw-normal">Silahkan login</h1>
+  <% if( messages.error ) { %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <%- messages.error %>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  <% } %>
   <div class="status"></div>
   <form action="/auth/login" method="post" id="form-login">
     <div class="form-floating">
@@ -42,7 +53,7 @@
   <p class="mt-5 mb-3 text-muted">&copy; 2017–2021</p>
 </main>
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
   $(document).ready(function () {
     $("button[type=submit]").click(function (e) {
       e.preventDefault();
@@ -87,4 +98,4 @@
       });
     });
   });
-</script>
+</script> -->

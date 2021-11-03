@@ -7,7 +7,7 @@ const device = mongoose.model("Device", {
   },
   insertAt: {
     type: Date,
-    required: true,
+    default: Date.now,
   },
 });
 

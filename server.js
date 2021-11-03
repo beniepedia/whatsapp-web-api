@@ -1,3 +1,5 @@
+process.env.TZ = "Asia/Jakarta";
+const dotenv = require("dotenv").config();
 const express = require("express");
 const fs = require("fs");
 const socketIO = require("socket.io");
@@ -11,6 +13,9 @@ const { body, validationResult } = require("express-validator");
 const { phoneNumberFormat } = require("./app/helpers/formatter.js");
 const { MessageMedia } = require("whatsapp-web.js");
 const layouts = require("express-ejs-layouts");
+const passport = require("passport");
+const session = require("express-session");
+const flash = require("express-flash");
 
 // MongoDB
 const deviceModel = require("./app/models/deviceModel");
@@ -20,6 +25,19 @@ const app = express();
 const server = http.createServer(app);
 const port = process.env.PORT || 3000;
 const io = socketIO(server);
+
+// Passport initializei
+app.use(
+  session({
+    secret: "my_scret",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+require("./app/config/passport-config")(passport);
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -32,25 +50,24 @@ app.use(layouts);
 
 app.use(express.static(__dirname + "/public"));
 
-// Route to home
 const homeRouter = require("./app/routes/homeRouter");
-// Route to API
 const apiRouter = require("./app/routes/apiRouter");
 const authRouter = require("./app/routes/authRouter");
+const dashboardRouter = require("./app/routes/adminRouter");
 
 app.use("/", homeRouter);
 app.use("/auth", authRouter);
+app.use("/administrator", dashboardRouter);
 
 // Server
 (async () => {
-  
   server.listen(port, function () {
     console.log(`Server is ready http://localhost:${port}`);
   });
-  
+
   // const client = await dev.client();
   // client.initialize();
-  
+
   // Connection Socket
   // io.on("connection", function (socket) {
   //   socket.emit("message", "Conecting to server. Please wait ...");
