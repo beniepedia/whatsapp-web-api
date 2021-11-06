@@ -4,10 +4,11 @@ const passport = require("passport");
 
 const { body } = require("express-validator");
 
-const authController = require("../controllers/authController");
+const controller = require("../controllers/index");
 const { Authenticated } = require("../config/auth");
 
-router.get("/login", Authenticated, authController.index);
+router.get("/login", Authenticated, controller.auth.index);
+
 router.post(
   "/login",
   [
@@ -22,8 +23,7 @@ router.post(
     successRedirect: "/administrator/dashboard",
     failureRedirect: "/auth/login",
     failureFlash: true,
-  }),
-  authController.login
+  })
 );
 
 router.delete("/logout", (req, res) => {

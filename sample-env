@@ -1,5 +1,7 @@
 PORT = 3000
-DB = 'mongodb://localhost:27017/whatsapp-api'
-DB_CONNECT = "mongodb+srv://<Username>:<Password>@whastappapi.xvzha.mongodb.net/WhatsApp-API?retryWrites=true&w=majority"
-SESSION_FILE_PATH = 
-SESSION_SECRET = 
+SESSION_SECRET = 'secret'
+
+DB_HOST = 'localhost'
+DB_USER = 'postgres'
+DB_PASS = 'root'
+DB_NAME = 'whatsapp-api'

@@ -1,7 +1,6 @@
 process.env.TZ = "Asia/Jakarta";
 const dotenv = require("dotenv").config();
 const express = require("express");
-const fs = require("fs");
 const socketIO = require("socket.io");
 var methodOverride = require("method-override");
 const http = require("http");
@@ -17,9 +16,6 @@ const passport = require("passport");
 const session = require("express-session");
 const flash = require("express-flash");
 
-// MongoDB
-const deviceModel = require("./app/models/deviceModel");
-
 // Create Server
 const app = express();
 const server = http.createServer(app);
@@ -34,6 +30,7 @@ app.use(
     saveUninitialized: false,
   })
 );
+
 require("./app/config/passport-config")(passport);
 app.use(passport.initialize());
 app.use(passport.session());

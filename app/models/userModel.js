@@ -1,73 +1,28 @@
-'use strict';
+"use strict";
 
-// require("../config/db");
-// const mongoose = require('mongoose');
+const db = require("../config/db");
+const Sequelize = require("sequelize");
 
-// const user = mongoose.model('User', {
-//     name: {
-//         type: String,
-//         required: true,
-//     },
-//     email: {
-//         type: String,
-//         required: true,
-//     },
-//     password:{
-//         type: String,
-//         required: true,
-//     }
-// });
-
-// module.exports = user
-
-
-
-const { v4: uuid } = require('uuid');
-const mongoose = require('mongoose');
-
-const { Schema } = mongoose;
-const options = {
-  timestamps: true,
-};
-
-const getRequiredFiledMessage = (field) => {
-  const message = `${field} tidak boleh kosong`;
-  return [true, message];
-};
-
-const UserSchema = new Schema({
-  id: { type: String, default: uuid(), unique: true },
-//   name: {
-//     type: String,
-//     required: getRequiredFiledMessage('Name'),
-//     trim: true,
-//   },
-  email: {
-    type: String,
-    required: getRequiredFiledMessage('Email'),
-    trim: true,
-    unique: true,
+let users = db.define(
+  "users",
+  {
+    uid: Sequelize.STRING,
+    username: Sequelize.STRING,
+    email: Sequelize.STRING,
+    phone: Sequelize.STRING,
+    password: Sequelize.STRING,
+    isEmailVerified: Sequelize.BOOLEAN,
+    isPhoneVerified: Sequelize.BOOLEAN,
+    isBlocked: Sequelize.BOOLEAN,
+    currentLogin: Sequelize.TIME,
+    lastLogin: Sequelize.TIME,
   },
-//   mobile: {
-//     type: String,
-//     required: getRequiredFiledMessage('Mobile'),
-//     trim: true,
-//     unique: true,
-//   },
-  password: {
-    type: String,
-    required: getRequiredFiledMessage('Password'),
-  },
-  isEmailVerified: { type: Boolean, default: false },
-  isMobileVerified: { type: Boolean, default: false },
-  isBlocked: { type: Boolean, default: false },
-  isDeleted: { type: Boolean, default: false },
-  loginIp: { type: String, default: '' },
-  lastLoginProvider: { type: String, default: '' },
-  currentLoginProvider: { type: String, default: '' },
-  lastLogin: { type: Date, default: Date.now() },
-  lastFailedLogin: Date,
-  currentLogin: { type: Date, default: Date.now() },
-}, options);
+  {
+    freezeTableName: true,
+    timestamps: true,
+  }
+);
 
-module.exports = mongoose.model('User', UserSchema);
+users.removeAttribute("id");
+
+module.exports = users;
