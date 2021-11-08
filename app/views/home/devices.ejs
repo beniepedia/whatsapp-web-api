@@ -19,42 +19,71 @@
       <thead>
         <tr>
           <th>No</th>
-          <th>ID Perangkat</th>
+          <th>Nama Device</th>
           <th>No HP</th>
+          <th>Deskripsi</th>
           <th>Status</th>
           <th class="text-center">Aksi</th>
         </tr>
       </thead>
       <tbody>
+        <% if(devices.length > 0) { %> <% no=1; devices.forEach(function(device)
+        { %>
         <tr>
-          <td>1</td>
-          <td>Xiomi</td>
-          <td>0821763637</td>
+          <td><%= no++ %></td>
+          <td><%= device.devName %></td>
+          <td><%= device.phone %></td>
+          <td><%= device.description == "" ? '-' : device.description %></td>
           <td>
-            <div class="badge badge-success py-2">Terhubung</div>
+            <div
+              class="
+                badge badge-<%=
+                device.status
+                ==
+                'terputus'
+                ?
+                'danger'
+                :
+                'success'
+                %>
+                py-2
+              "
+            >
+              <%= device.status %>
+            </div>
           </td>
           <td class="text-center">
             <div class="btn-group btn-group-sm">
               <div class="btn btn-success scan-qrcode">
                 <i class="bi bi-qr-code"></i>
               </div>
-              <div class="btn btn-danger">
+              <button
+                class="btn btn-danger delete"
+                type="button"
+                id="<%= device.devId %>"
+              >
                 <i class="bi bi-trash-fill"></i>
-              </div>
+              </button>
               <div class="btn btn-warning">
                 <i class="bi bi-pencil-fill"></i>
               </div>
             </div>
           </td>
         </tr>
+        <% }) %> <% } else {%>
+        <tr>
+          <td colspan="6" class="text-center">
+            Belum ada perangkat yang ditambahkan
+          </td>
+        </tr>
+        <% } %>
       </tbody>
     </table>
   </div>
 </div>
 
-<!-- Modal QR SCAN -->
 <div class="modal fade" id="modal-qrcode" tabindex="-1">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title text-gray-800">SCAN QRCODE</h5>
@@ -69,7 +98,7 @@
       </div>
       <div class="modal-body">
         <img
-          src="https://www.researchgate.net/profile/Hafiza-Abas/publication/288303807/figure/fig1/AS:311239419940864@1451216668048/An-example-of-QR-code.png"
+          src="/assets/img/ajax-loader.gif"
           alt="qrcode"
           class="img-thumbnail w-100"
         />
@@ -83,30 +112,34 @@
   </div>
 </div>
 
-<!-- modal add devices -->
 <div class="modal fade" id="modal-add-device" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title text-gray-800">Tambah Perangkat</h5>
-        <button
-          type="button"
-          class="close"
-          data-dismiss="modal"
-          aria-label="Close"
-        >
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body text-gray-800">
-        <form action="">
+  <form action="/administrator/devices" method="POST" id="form-add-device">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-gray-800">Tambah Perangkat</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body text-gray-800">
           <div class="form-group">
             <label for="id-device">Nama perangkat</label>
-            <input type="text" class="form-control" id="id-device" />
+            <input
+              type="text"
+              class="form-control"
+              id="id-device"
+              name="devicename"
+            />
           </div>
           <div class="form-group">
             <label for="phone">Nomor HP</label>
-            <input type="text" class="form-control" id="phone" />
+            <input type="text" class="form-control" id="phone" name="phone" />
           </div>
           <div class="form-group">
             <label for="description">Deskripsi</label>
@@ -117,15 +150,16 @@
               rows="3"
             ></textarea>
           </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-          Tutup
-        </button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Tutup
+          </button>
+          <button type="submit" class="btn btn-primary">Tambah</button>
+        </div>
       </div>
     </div>
-  </div>
+  </form>
 </div>
 
 <script type="text/javascript">
@@ -136,6 +170,81 @@
 
     $(".btn-add-device").click(function () {
       $("#modal-add-device").modal("show");
+    });
+
+    $(".delete").click(function () {
+      const conf = confirm("Hapus data ini ?");
+      if (conf) {
+        const id = $(this).attr("id");
+        $.ajax({
+          url: "/administrator/devices",
+          type: "DELETE",
+          data: { id: id },
+          dataType: "JSON",
+          success: function (res) {
+            if (res.status == true) {
+              alert(res.message);
+              location.reload(true);
+            }
+          },
+        });
+      }
+    });
+
+    const formAddDevice = $("#form-add-device");
+
+    formAddDevice.validate({
+      rules: {
+        devicename: {
+          required: true,
+        },
+        phone: {
+          required: true,
+          digits: true,
+        },
+      },
+      messages: {
+        devicename: {
+          required: "Nama perangkat tidak boleh kosong",
+        },
+        phone: {
+          required: "Isi nomor handphone yang akan digunakan",
+          digits: "Format nomor handphone tidak sesuai.",
+        },
+      },
+      errorElement: "span",
+      errorPlacement: function (error, element) {
+        error.addClass("invalid-feedback");
+        element.closest(".form-group").append(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass("is-invalid").removeClass("is-valid");
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).addClass("is-valid").removeClass("is-invalid");
+      },
+      submitHandler: function (form) {
+        $.ajax({
+          url: formAddDevice.attr("action"),
+          type: formAddDevice.attr("method"),
+          data: formAddDevice.serialize(),
+          dataType: "json",
+          beforeSend: function () {
+            $("button[type=submit]").attr("disabled", "disabled");
+            $("button[type=submit]").html("Please wait");
+          },
+          success: function (res) {
+            if (res.status == true) {
+              alert(res.message);
+              location.reload(true);
+            }
+          },
+          complete: function () {
+            $("button[type=submit]").attr("disabled", "false");
+            $("button[type=submit]").html("Tambah");
+          },
+        });
+      },
     });
   });
 </script>

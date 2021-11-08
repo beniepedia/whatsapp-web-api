@@ -10,7 +10,6 @@ const axios = require("axios");
 // const dev = require("./app/library/whatsapp-api.js");
 const { body, validationResult } = require("express-validator");
 const { phoneNumberFormat } = require("./app/helpers/formatter.js");
-const { MessageMedia } = require("whatsapp-web.js");
 const layouts = require("express-ejs-layouts");
 const passport = require("passport");
 const session = require("express-session");
